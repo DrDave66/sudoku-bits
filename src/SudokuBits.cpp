@@ -53,35 +53,9 @@ string s3 = "6314827957921356488457692311582963744673518293298471565169734829836
 // Loaded 10000000 	puzzles in 10631.764658 msec, 1.063176 usec/puzzle
 
 // 100P 0 ..4.83..2.51..43......9671.12.8....6.4....5..83.6.79...6.3.9.4...7...2.5.9..5.8.3
-#define xSHORTMAIN
+#define SHORTMAIN
 #ifdef SHORTMAIN
 int main() {
-	Puzzles p("../../sudoku-puzzles/10MP.txt");
-	printf("%d puzzles loaded\n", p.getNumberOfPuzzles());
-	vector<uint32_t> puzNum;
-	string filename ="../../sudoku-puzzles/9.8MP.txt";
-	uint32_t numPuzzles = p.getNumberOfPuzzles();
-	uint32_t newFilePuzzles = 0;
-
-	fstream file;
-	string str;
-	Sudoku s;
-	FILE* f = fopen("../../sudoku-puzzles/9.8MP.txt","wt");
-	if(f != NULL) {
-		for (int i = 0 ; i < numPuzzles ; i++) {
-			s.setPuzzle(p.getPuzzle(i));
-			s.solvePuzzle();
-			if(s.guessNumber == 0) {
-				fprintf(f,"%s\n",p.getPuzzle(i).c_str());
-				newFilePuzzles++;
-			}
-			if(i % 100000 == 0)
-				printf("%d of %d, %d to new\n",i,numPuzzles, newFilePuzzles);
-		}
-	}
-	fclose(f);
-  //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  //std::default_random_engine generator (seed);
 
 
 }
