@@ -4,7 +4,7 @@ Guess::Guess() {
     square = RowCol(10,10);
     
 }
-Guess::Guess(RowCol _square, bitset<9> _guess,SUDOKUTYPE _puzzle, SUDOKUTYPE _allowableValues) {
+Guess::Guess(RowCol _square, uint16_t _guess,SUDOKUTYPE _puzzle, SUDOKUTYPE _allowableValues) {
     puzzle = _puzzle;
     allowableValues = _allowableValues;
     square = _square;
@@ -28,8 +28,8 @@ Guess& Guess::operator=(const Guess& cpy) {
 }
 
 string Guess::toString() {
-	char ss[1000];
-    sprintf(ss,"Square: %s, Guess: %s,\n",square.toString().c_str(), guess.to_string().c_str());
+//	char ss[1000];
+//    sprintf(ss,"Square: %s, Guess: %s,\n",square.toString().c_str(), Sudoku::bitToString(guess));
 	string retval;
 	return retval;
 }

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <random>
 #include <chrono>
+#include <strstream>
 
 using std::fstream;
 using std::string;
@@ -55,9 +56,19 @@ string s3 = "6314827957921356488457692311582963744673518293298471565169734829836
 // 100P 0 ..4.83..2.51..43......9671.12.8....6.4....5..83.6.79...6.3.9.4...7...2.5.9..5.8.3
 #define SHORTMAIN
 #ifdef SHORTMAIN
+
 int main() {
+	Sudoku s;
+	s.setPuzzle(grid1);
+	s.printPuzzle();
+	s.printAllowableValues();
+	//"..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..";
+	for (auto r:s.rows) {
+		for (auto c:s.cols) {
+			printf("%s - %d\n",toBinaryString(s.allowableValues[r][c]).c_str(), s.countBits(s.allowableValues[r][c]));
 
-
+		}
+	}
 }
 
 #else

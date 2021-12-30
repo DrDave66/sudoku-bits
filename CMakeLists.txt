@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(sudoku VERSION 0.1.0)
-add_compile_options(-std=c++14 -Wall -Wpedantic)
+
+add_compile_options(-std=c++17)
+add_compile_options(-Wall)
+add_compile_options(-Wpedantic)
 # comment
 add_executable(
     sudoku 
@@ -9,5 +12,5 @@ add_executable(
     src/Puzzles.cpp 
     src/RowCol.cpp 
     src/Sudoku.cpp 
-    src/BitsetSudoku.cpp)
+    src/SudokuBits.cpp)
 

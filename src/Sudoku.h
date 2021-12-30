@@ -24,14 +24,15 @@ using std::flush;
 using std::stringstream;
 using std::string;
 using std::uint8_t;
-using std::bitset;
-
+using std::uint16_t;
 
 #include "Guess.h"
 #include "PrecisionTimeLapse.h"
 #include "SudokuTypes.h"
 #include "RowCol.h"
 
+#define ALL_SET 	UINT16_C(0b0000'0001'1111'1111) 
+#define ALL_CLEAR 	UINT16_C(0b0000'0000'0000'0000)
 class Sudoku
 {
 public:
@@ -43,21 +44,22 @@ public:
     
 	bool setPuzzle(string p);
 	uint64_t setPuzzleCount;
-    bool setValue(uint8_t row, uint8_t col, uint8_t bit);
+    bool setValue(uint8_t row, uint8_t col, uint16_t bm);
 	uint64_t setValueCount;
-    bool setValue(RowCol rc, bitset<9>);
+    bool setValue(RowCol rc, uint16_t bm);
 	uint64_t setValueRCCount;
     
 	void printPuzzle(void);
 	void printPuzzle(string title);
 	void printAllowableValues(void);
 	void printAllowableValues(string title);
+	static string bitsToString(uint16_t bits);
 
 	void solveOnes(void);
 	uint64_t solveOnesCount;
     bool isPuzzleSolved(void);
 	uint64_t isPuzzleSolvedCount;
-	bool removeGuess(RowCol, bitset<9>);
+	bool removeGuess(RowCol, uint16_t);
 	uint64_t removeGuessCount;
 	bool guessesRemain(void);
 	uint64_t guessesRemainCount;
@@ -72,7 +74,8 @@ public:
 	bool startGuessing();
 	uint64_t startGuessingCount;
 	void printGuessList();
-	uint8_t singleBitSet(bitset<9> b);
+	uint8_t countBits(uint16_t num);
+	uint8_t singleBitSet(uint16_t b);
 	uint64_t singleBitSetCount;
 	void printCounts();
 //private:
@@ -94,7 +97,7 @@ public:
 	array<Guess, 81> guessList; // ordered list of guesses
 	uint8_t guessNumber; // guess number used for entries in guess list
     Guess newGuess; // static new guess
-	array<bitset<9>, 9> bitMask; // bit masks for all values
+	array<uint16_t, 10> bitMask; // bit masks for all values
 
 };
 
@@ -111,5 +114,36 @@ vector<RowCol> crossProduct (T a, U b) {
         }
     }
 	return v;
+}
+
+template<typename T>
+static std::string toBinaryString(const T& x)
+{
+    std::stringstream ss;
+    ss << "0b" << std::bitset<sizeof(T) * 8>(x);
+	string s = ss.str();
+	if(sizeof(T) >=1)
+		s.insert(6,"'");
+	if(sizeof(T) >=2) {
+		s.insert(11,"'");
+		s.insert(16,"'");
+	}
+	if(sizeof(T) >=4) {
+		s.insert(21,"'");
+		s.insert(26,"'");
+		s.insert(31,"'");
+		s.insert(36,"'");	
+	}
+	if(sizeof(T) >=8) {
+		s.insert(41,"'");
+		s.insert(46,"'");
+		s.insert(51,"'");
+		s.insert(56,"'");	
+		s.insert(61,"'");
+		s.insert(66,"'");
+		s.insert(71,"'");
+		s.insert(76,"'");	
+	}
+    return s; //ss.str();
 }
 #endif // _SUDOKU
