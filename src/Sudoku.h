@@ -84,6 +84,9 @@ public:
     array<uint8_t,9> cols;
 	array<uint8_t,9> bits;
 
+
+
+	
 	// arrays for unitList, units and peers
 	// 27 units to list, 9 entries in a unitlist
     array<array<RowCol, 9> ,27> unitList;

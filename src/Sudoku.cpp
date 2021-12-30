@@ -13,17 +13,17 @@
 #include <chrono>
 #include <random>
 
-#define noPRINTVECTORS
 /**
  * @brief Construct a new Sudoku:: Sudoku object
  *
  */
+
+std::uniform_int_distribution<uint8_t> rand08(0,8);	
+
 Sudoku::Sudoku()
 {
     createVectors();
     clearPuzzle();
-    // seed PRNG
-    srand((uint32_t)time(NULL));
 }
 
 /**
@@ -36,11 +36,9 @@ Sudoku::Sudoku(string puzzle)
     createVectors();
     clearPuzzle();
     setPuzzle(puzzle);
-    // seed PRNG
-    srand((uint32_t)time(NULL));
 }
 
-#define PRINTVECTORS
+#define xPRINTVECTORS
 /**
  * @brief constructs all of the RowCol arrays we need for later looping
  *
@@ -51,6 +49,15 @@ Sudoku::Sudoku(string puzzle)
  */
 void Sudoku::createVectors(void)
 {
+    // seed PRNG 
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	std::default_random_engine generator (seed);
+    
+
+    for(uint8_t i = 0 ; i < 100 ; i++) {
+        printf("%u\n",rand08(generator));
+    }
+
     startGuessingCount=0;
     clearPuzzleCount=0;
     setPuzzleCount=0;
@@ -642,9 +649,7 @@ bool Sudoku::guessesRemain(void)
  */
 Guess Sudoku::getGuessRandom()
 {
-    // std::uniform_int_distribution<uint8_t> rand08(0,8);
-    // unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    // std::default_random_engine generator (seed);
+
     // // guess is returned as square,value in an array of bits
     // // select random vector
     // bool squareIsEmpty = false;
