@@ -54,22 +54,21 @@ string s3 = "6314827957921356488457692311582963744673518293298471565169734829836
 // Loaded 10000000 	puzzles in 10631.764658 msec, 1.063176 usec/puzzle
 
 // 100P 0 ..4.83..2.51..43......9671.12.8....6.4....5..83.6.79...6.3.9.4...7...2.5.9..5.8.3
-#define SHORTMAIN
+#define xSHORTMAIN
 #ifdef SHORTMAIN
 
 int main() {
 	Sudoku s;
-	s.setPuzzle(grid1);
+	s.setPuzzle(hard1);
 	s.printPuzzle();
 	s.printAllowableValues();
-	//"..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..";
-	for (auto r:s.rows) {
-		for (auto c:s.cols) {
-			printf("%s - %d\n",toBinaryString(s.allowableValues[r][c]).c_str(), s.countBits(s.allowableValues[r][c]));
-
-		}
-	}
+	s.solvePuzzle();
+	s.printPuzzle();
+	s.printAllowableValues();
+	printf("Puzzle solved returned %d\n",s.isPuzzleSolved());
+	
 }
+	
 
 #else
 
@@ -105,8 +104,8 @@ int main()
 			if(s.guessNumber != 0) {
 				//puzzle 7734746 needed a guess
 				//654...8.387.364.9...2.........4.26..9...574..4256.8.......8.54........212.65..3..
-				printf("puzzle %d needed a guess\n",i);
-				cout << pf.getPuzzle(i) << endl;
+				printf("puzzle %d needed a %d guesses\n",i,s.guessNumber);
+				//cout << pf.getPuzzle(i) << endl;
 			}
 		}
 		else {

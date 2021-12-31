@@ -13,6 +13,7 @@
 #include <ctime>
 #include <sstream>
 #include <bitset>
+#include <random>
 
 using std::array;
 using std::vector;
@@ -44,9 +45,9 @@ public:
     
 	bool setPuzzle(string p);
 	uint64_t setPuzzleCount;
-    bool setValue(uint8_t row, uint8_t col, uint16_t bm);
+    bool setValue(uint8_t row, uint8_t col, BITMASK bm);
 	uint64_t setValueCount;
-    bool setValue(RowCol rc, uint16_t bm);
+    bool setValue(RowCol rc, BITMASK bm);
 	uint64_t setValueRCCount;
     
 	void printPuzzle(void);
@@ -59,7 +60,7 @@ public:
 	uint64_t solveOnesCount;
     bool isPuzzleSolved(void);
 	uint64_t isPuzzleSolvedCount;
-	bool removeGuess(RowCol, uint16_t);
+	bool removeGuess(RowCol, BITMASK);
 	uint64_t removeGuessCount;
 	bool guessesRemain(void);
 	uint64_t guessesRemainCount;
@@ -83,8 +84,11 @@ public:
     array<uint8_t,9> rows;
     array<uint8_t,9> cols;
 	array<uint8_t,9> bits;
+//	uint8_t rows[9];
+//	uint8_t cols[9];
+//	uint8_t bits[9];
 
-
+	std::default_random_engine generator;
 
 	
 	// arrays for unitList, units and peers
