@@ -79,6 +79,7 @@ public:
 	uint8_t singleBitSet(uint16_t b);
 	uint64_t singleBitSetCount;
 	void printCounts();
+	string getPuzzleString();
 //private:
     // needed for cross product
     array<uint8_t,9> arr08;

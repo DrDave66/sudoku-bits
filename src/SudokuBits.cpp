@@ -58,10 +58,29 @@ string s3 = "6314827957921356488457692311582963744673518293298471565169734829836
 #ifdef SHORTMAIN
 
 int main() {
-	Sudoku s;
-	
+	Sudoku s(grid1);
+	s.printPuzzle();
+	uint16_t flat[81];
+	int i = 0;
+	for(uint8_t r=0;r<9;r++) {
+		for(uint8_t c=0;c<9;c++) {
+			flat[i] = s.puzzle[r][c];
+			i++;
+		}
+	}
+
+	for(uint8_t i = 0;i<81;i++) {
+		s.puzzle[1/9][i%9] = flat[i];
+	}
+	uint16_t *p = &s.puzzle[0][0];
+	uint16_t z;
+	for(uint8_t i = 0;i<81;i++) {
+		z= flat[i] + *(p+i);
+	}
+	for(uint8_t i = 0;i<81;i++) {
+		printf("%d %d %d\n",flat[i],*(p+i), z);
+	}
 }
-	
 
 #else
 
