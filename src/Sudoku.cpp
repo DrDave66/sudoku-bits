@@ -76,7 +76,7 @@ void Sudoku::createVectors(void)
         bits[i] = i;
     }
     vector<RowCol> rcv;
-    for (auto b : bits)
+    for (auto b:bits)
     {
         bitMask[b] = 0b0000'0000'0000'0001 << b;
     }
@@ -98,8 +98,7 @@ void Sudoku::createVectors(void)
     ul = 0;
     // for each col across the rows
     // crossProduct routine needs two iterables, so create a one element vector
-    for (auto c : cols)
-    {
+    for (auto c:col) {
         v1.clear();
         v1.push_back(c);
         temp = crossProduct(rows, v1);
@@ -846,23 +845,26 @@ uint8_t Sudoku::singleBitSet(uint16_t bs)
     return 10;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat="
 void Sudoku::printCounts() {
     setlocale(LC_ALL,"");
     printf("\nSudoku counts - number of times a function was called since class creation\n");
-    printf("clearPuzzle         %lu\n",clearPuzzleCount);
-    printf("setPuzzle           %lu\n",setPuzzleCount);
-    printf("setValue            %lu\n",setValueCount);
-    printf("setValueRC          %lu\n",setValueRCCount);
-    printf("solveOnes           %lu\n",solveOnesCount);
-    printf("isPuzzleSolved      %lu\n",isPuzzleSolvedCount);
-    printf("startGuessingCount  %lu\n",startGuessingCount);
-    printf("removeGuess         %lu\n",removeGuessCount);
-    printf("guessesRemain       %lu\n",guessesRemainCount);
-    printf("getGuess            %lu\n",getGuessCount);
-    printf("popGuess            %lu\n",popGuessCount);
-    printf("pushGuess           %lu\n",pushGuessCount);
-    printf("singleBitSet        %lu\n",singleBitSetCount);
+    printf("clearPuzzle         %'lu\n",clearPuzzleCount);
+    printf("setPuzzle           %'lu\n",setPuzzleCount);
+    printf("setValue            %'lu\n",setValueCount);
+    printf("setValueRC          %'lu\n",setValueRCCount);
+    printf("solveOnes           %'lu\n",solveOnesCount);
+    printf("isPuzzleSolved      %'lu\n",isPuzzleSolvedCount);
+    printf("startGuessingCount  %'lu\n",startGuessingCount);
+    printf("removeGuess         %'lu\n",removeGuessCount);
+    printf("guessesRemain       %'lu\n",guessesRemainCount);
+    printf("getGuess            %'lu\n",getGuessCount);
+    printf("popGuess            %'lu\n",popGuessCount);
+    printf("pushGuess           %'lu\n",pushGuessCount);
+    printf("singleBitSet        %'lu\n",singleBitSetCount);
 }
+#pragma GCC diagnostic pop
 
 uint8_t Sudoku::countBits(uint16_t x) {
     uint8_t result = 0;

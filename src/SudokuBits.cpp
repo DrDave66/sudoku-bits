@@ -58,14 +58,41 @@ string s3 = "6314827957921356488457692311582963744673518293298471565169734829836
 #ifdef SHORTMAIN
 
 int main() {
-	Sudoku s;
-	s.setPuzzle(hard1);
-	s.printPuzzle();
-	s.printAllowableValues();
-	s.solvePuzzle();
-	s.printPuzzle();
-	s.printAllowableValues();
-	printf("Puzzle solved returned %d\n",s.isPuzzleSolved());
+	PrecisionTimeLapse ptl;
+	uint64_t row[9];
+	uint64_t col[9];
+	uint8_t r;
+	uint64_t iterations = 10000000000;
+	uint64_t rsum=0;
+	uint64_t csum=0;
+	for(int i = 0 ; i < 9 ; i++) {
+		row[i] = i;	
+		col[i] = i;
+	}
+	ptl.start();
+	for (uint64_t ii = 0 ; ii < iterations ; ii++) {
+		if(ii % 1'000'000'000 == 0) printf("%ld\n",ii);
+		for(auto rr:row) {
+			rsum += row[rr];
+		}
+	}
+	ptl.stop();
+	printf("%lu\n", rsum);
+	double autoLoopTime = ptl.elapsed()*1000.0;
+	ptl.start();
+	for (uint64_t ii = 0 ; ii < iterations ; ii++) {
+		if(ii % 1'000'000'000 == 0) printf("%ld\n",ii);
+		for(r = 0 ; r < 9 ; r++) {
+			csum += col[r];
+		}
+	}
+	ptl.stop();
+	printf("%lu\n", csum);
+	double forLoopTime = ptl.elapsed()*1000.0;
+	printf("Auto loop %f msec\n",autoLoopTime);
+	printf("For loop  %f msec\n",forLoopTime);
+	printf("auto loop is slower by %f percent\n", (autoLoopTime - forLoopTime) / forLoopTime * 100.0);
+	
 	
 }
 	
@@ -90,6 +117,7 @@ int main()
 	double time;
 	total.start();
 	bool isSolved;
+	uint16_t guessed = 0;
 	uint32_t onePercent = (uint32_t)(pf.getNumberOfPuzzles()/100);
 	vector<uint32_t> puzNumWithGuesses;
 	for (uint32_t i = 0; i < pf.getNumberOfPuzzles(); i++) {
@@ -98,13 +126,15 @@ int main()
 		isSolved = s.solvePuzzle();
 		ptl.stop();
 		time = ptl.elapsed();
+
 		if (isSolved == true)
 		{ //puzzle 7734746 needed a guess
    			solved += 1;
 			if(s.guessNumber != 0) {
+				guessed++;
 				//puzzle 7734746 needed a guess
 				//654...8.387.364.9...2.........4.26..9...574..4256.8.......8.54........212.65..3..
-				printf("puzzle %d needed a %d guesses\n",i,s.guessNumber);
+				//printf("puzzle %d needed a %d guesses\n",i,s.guessNumber);
 				//cout << pf.getPuzzle(i) << endl;
 			}
 		}
@@ -121,10 +151,10 @@ int main()
 		}
 	}
 	total.stop();
-    cout << "Solved " << solved << " out of " << pf.getNumberOfPuzzles() << " puzzles\n";
+    cout << "Solved " << solved << " out of " << pf.getNumberOfPuzzles() << " puzzles. " << guessed << " puzzles needed guesses" << endl;
 	cout << "Min time: " << minTime*1000.0 << " ms, Max time: " << maxTime*1000.0 << " ms, Average Time: " << (double)sumTime / (double)solved * 1000 << " ms, Total: " << total.elapsedString(SEC) << " sec" << endl;
 	cout << endl << endl;
-	//s.printCounts();
+	s.printCounts();
 }
 
 #endif

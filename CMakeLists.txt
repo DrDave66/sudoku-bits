@@ -4,7 +4,10 @@ project(sudoku VERSION 0.1.0)
 add_compile_options(-std=c++14)
 add_compile_options(-Wall)
 add_compile_options(-Wpedantic)
+
 # comment
+#add_executable(sudoku src/SudokuBits.cpp)
+
 add_executable(
     sudoku 
     src/Guess.cpp 
