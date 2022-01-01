@@ -80,13 +80,13 @@ public:
 	uint64_t singleBitSetCount;
 	void printCounts();
 //private:
-    // these arrays are used for optimized iteration
-    array<uint8_t,9> rows;
-    array<uint8_t,9> cols;
-	array<uint8_t,9> bits;
-//	uint8_t rows[9];
-//	uint8_t cols[9];
-//	uint8_t bits[9];
+    // needed for cross product
+    array<uint8_t,9> arr08;
+
+//	array<uint8_t,9> bits;
+	uint8_t rows[9];
+	uint8_t cols[9];
+	uint8_t bits[9];
 
 	std::default_random_engine generator;
 

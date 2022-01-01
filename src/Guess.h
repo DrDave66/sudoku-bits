@@ -16,7 +16,7 @@ class Guess
 {
 public:
     Guess();
-    Guess(RowCol _square, uint16_t _bit, SUDOKUTYPE _puzzle, SUDOKUTYPE _allowableValues);
+    Guess(RowCol _square, uint16_t _bit, SUDOKUTYPE& _puzzle, SUDOKUTYPE& _allowableValues);
 
 	Guess(const Guess&);
 	Guess& operator=(const Guess& cpy) ;

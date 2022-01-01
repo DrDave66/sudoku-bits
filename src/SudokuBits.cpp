@@ -58,41 +58,7 @@ string s3 = "6314827957921356488457692311582963744673518293298471565169734829836
 #ifdef SHORTMAIN
 
 int main() {
-	PrecisionTimeLapse ptl;
-	uint64_t row[9];
-	uint64_t col[9];
-	uint8_t r;
-	uint64_t iterations = 10000000000;
-	uint64_t rsum=0;
-	uint64_t csum=0;
-	for(int i = 0 ; i < 9 ; i++) {
-		row[i] = i;	
-		col[i] = i;
-	}
-	ptl.start();
-	for (uint64_t ii = 0 ; ii < iterations ; ii++) {
-		if(ii % 1'000'000'000 == 0) printf("%ld\n",ii);
-		for(auto rr:row) {
-			rsum += row[rr];
-		}
-	}
-	ptl.stop();
-	printf("%lu\n", rsum);
-	double autoLoopTime = ptl.elapsed()*1000.0;
-	ptl.start();
-	for (uint64_t ii = 0 ; ii < iterations ; ii++) {
-		if(ii % 1'000'000'000 == 0) printf("%ld\n",ii);
-		for(r = 0 ; r < 9 ; r++) {
-			csum += col[r];
-		}
-	}
-	ptl.stop();
-	printf("%lu\n", csum);
-	double forLoopTime = ptl.elapsed()*1000.0;
-	printf("Auto loop %f msec\n",autoLoopTime);
-	printf("For loop  %f msec\n",forLoopTime);
-	printf("auto loop is slower by %f percent\n", (autoLoopTime - forLoopTime) / forLoopTime * 100.0);
-	
+	Sudoku s;
 	
 }
 	
@@ -101,7 +67,6 @@ int main() {
 
 int main()
 {
-
 	Puzzles pf("../../sudoku-puzzles/1MP.txt");
 	cout << pf.getNumberOfPuzzles() << " puzzles loaded" << endl << endl << endl;
 	if (pf.getNumberOfPuzzles() == 0)
@@ -119,7 +84,6 @@ int main()
 	bool isSolved;
 	uint16_t guessed = 0;
 	uint32_t onePercent = (uint32_t)(pf.getNumberOfPuzzles()/100);
-	vector<uint32_t> puzNumWithGuesses;
 	for (uint32_t i = 0; i < pf.getNumberOfPuzzles(); i++) {
 		s.setPuzzle(pf.getPuzzle(i));
 		ptl.start();
@@ -155,6 +119,7 @@ int main()
 	cout << "Min time: " << minTime*1000.0 << " ms, Max time: " << maxTime*1000.0 << " ms, Average Time: " << (double)sumTime / (double)solved * 1000 << " ms, Total: " << total.elapsedString(SEC) << " sec" << endl;
 	cout << endl << endl;
 	s.printCounts();
+	printf("\n");
 }
 
 #endif
@@ -162,4 +127,6 @@ int main()
 // 10MP-Failed.txt      	Min time: 0.107397 ms, Max time: 180.694 ms, Average Time: 0.963753 ms, Total: 364.072973 sec
 // 1MP old way				Min time: 0.021334 ms, Max time: 5.1635 ms, Average Time: 0.0305412 ms, Total: 66.192528 sec
 // 1MP bit round 1 			Min time: 0.006958 ms, Max time: 12.3362 ms, Average Time: 0.00862062 ms, Total: 13.802928 sec
+// 1MP better loops			Min time: 0.005765 ms, Max time: 6.95828 ms, Average Time: 0.00742397 ms, Total: 10.232687 sec
+
 // 10MP						Min time: 0.003219 ms, Max time: 68.2603 ms, Average Time: 0.0180983 ms, Total: 220.961769 sec

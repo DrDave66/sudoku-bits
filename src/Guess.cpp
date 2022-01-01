@@ -4,16 +4,16 @@ Guess::Guess() {
     square = RowCol(10,10);
     
 }
-Guess::Guess(RowCol _square, uint16_t _guess,SUDOKUTYPE _puzzle, SUDOKUTYPE _allowableValues) {
-    puzzle = _puzzle;
-    allowableValues = _allowableValues;
+Guess::Guess(RowCol _square, uint16_t _guess,SUDOKUTYPE& _puzzle, SUDOKUTYPE& _allowableValues) {
+    memcpy(puzzle,_puzzle,sizeof(SUDOKUTYPE));
+    memcpy(allowableValues, _allowableValues, sizeof(SUDOKUTYPE));
     square = _square;
 	guess = _guess;
 }
 
 Guess::Guess(const Guess& g) {
-    puzzle = g.puzzle;
-    allowableValues = g.allowableValues;
+    memcpy(puzzle,g.puzzle,sizeof(SUDOKUTYPE));
+    memcpy(allowableValues, g.allowableValues, sizeof(SUDOKUTYPE));
 	square = g.square;
 	guess = g.guess;
 }
@@ -21,8 +21,8 @@ Guess::Guess(const Guess& g) {
 Guess& Guess::operator=(const Guess& cpy) {
 	square = cpy.square;
 	guess = cpy.guess;
-    puzzle = cpy.puzzle;
-    allowableValues = cpy.allowableValues;
+    memcpy(puzzle,cpy.puzzle,sizeof(SUDOKUTYPE));
+    memcpy(allowableValues, cpy.allowableValues, sizeof(SUDOKUTYPE));
 
 	return *this;
 }
