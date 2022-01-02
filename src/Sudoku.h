@@ -1,23 +1,17 @@
 #pragma once
 #ifndef _SUDOKU
 #define _SUDOKU
-#include <array>
 #include <typeinfo>
 #include <string>
 #include <vector>
-#include <set>
 #include <iostream>     // std::cout
 #include <iomanip>
 #include <cstring>
 #include <cstdlib>
-#include <ctime>
-#include <sstream>
 #include <bitset>
 #include <random>
 
-using std::array;
 using std::vector;
-using std::set;
 using std::cout;
 using std::endl;
 using std::setw;
@@ -30,7 +24,6 @@ using std::uint16_t;
 #include "Guess.h"
 #include "PrecisionTimeLapse.h"
 #include "SudokuTypes.h"
-#include "RowCol.h"
 
 #define ALL_SET 	UINT16_C(0b0000'0001'1111'1111) 
 #define ALL_CLEAR 	UINT16_C(0b0000'0000'0000'0000)
@@ -41,13 +34,13 @@ public:
 	Sudoku(string puzzle);
 	void clearPuzzle();
 	uint64_t clearPuzzleCount;
-	void createVectors(void);
+	void init(void);
     
 	bool setPuzzle(string p);
 	uint64_t setPuzzleCount;
-    bool setValue(uint8_t row, uint8_t col, BITMASK bm);
+    //bool setValue(uint8_t row, uint8_t col, BITMASK bm);
 	uint64_t setValueCount;
-    bool setValue(RowCol rc, BITMASK bm);
+    bool setValue(SQUARE rc, BITMASK bm);
 	uint64_t setValueRCCount;
     
 	void printPuzzle(void);
@@ -60,7 +53,7 @@ public:
 	uint64_t solveOnesCount;
     bool isPuzzleSolved(void);
 	uint64_t isPuzzleSolvedCount;
-	bool removeGuess(RowCol, BITMASK);
+	bool removeGuess(SQUARE, BITMASK);
 	uint64_t removeGuessCount;
 	bool guessesRemain(void);
 	uint64_t guessesRemainCount;
@@ -81,48 +74,66 @@ public:
 	void printCounts();
 	string getPuzzleString();
 //private:
-    // needed for cross product
-    array<uint8_t,9> arr08;
 
-//	array<uint8_t,9> bits;
-	uint8_t rows[9];
-	uint8_t cols[9];
-	uint8_t bits[9];
+	const uint8_t rows[9] = {0,1,2,3,4,5,6,7,8};
+	const uint8_t cols[9] = {0,1,2,3,4,5,6,7,8};
+	const uint8_t bits[9] = {0,1,2,3,4,5,6,7,8};
+	const uint8_t squares[81] = {
+	 0, 1, 2, 3, 4, 5, 6, 7, 8,
+	 9,10,11,12,13,14,15,16,17,
+	18,19,20,21,22,23,24,25,26,
+	27,28,29,30,31,32,33,34,35,
+	36,37,38,39,40,41,42,43,44,
+	45,46,47,48,49,50,51,52,53,
+	54,55,56,57,58,59,60,61,62,
+	63,64,65,66,67,68,69,70,71,
+	72,73,74,75,76,77,78,79,80
+	};
 
+	// }
 	std::default_random_engine generator;
-
-	
-	// arrays for unitList, units and peers
-	// 27 units to list, 9 entries in a unitlist
-    array<array<RowCol, 9> ,27> unitList;
-	// each cell belongs to 3 units, each having 9 cells
-	array<array<array<array<RowCol, 9> ,3 > ,9> ,9> units;
-	// each cell has 20 peers
-    array<array<array<RowCol, 20> ,9> ,9> peers;
-
     SUDOKUTYPE puzzle; // the puzzle
     SUDOKUTYPE allowableValues; // allowable values for each cell
-	array<Guess, 81> guessList; // ordered list of guesses
+	Guess guessList[81]; // ordered list of guesses
 	uint8_t guessNumber; // guess number used for entries in guess list
     Guess newGuess; // static new guess
-	array<uint16_t, 10> bitMask; // bit masks for all values
+	const uint16_t bitMask[10] = {
+		0b0000'0000'0000'0001,
+		0b0000'0000'0000'0010,
+		0b0000'0000'0000'0100,
+		0b0000'0000'0000'1000,
+		0b0000'0000'0001'0000,
+		0b0000'0000'0010'0000,
+		0b0000'0000'0100'0000,
+		0b0000'0000'1000'0000,
+		0b0000'0001'0000'0000,
+		0b0000'0010'0000'0000
+	};
 
+//      1   2   3    4   5   6    7   8   9
+//   =========================================
+// A || 0 | 1 | 2 || 3 | 4 | 5 || 6 | 7 | 8 ||
+// B || 9 | 10| 11|| 12| 13| 14|| 15| 16| 17||
+// C || 18| 19| 20|| 21| 22| 23|| 24| 25| 26||
+//   || --------- || --------- || --------- ||
+// D || 27| 28| 29|| 30| 31| 32|| 33| 34| 35||
+// E || 36| 37| 38|| 39| 40| 41|| 42| 43| 44||
+// F || 45| 46| 47|| 48| 49| 50|| 51| 52| 53||
+//   || --------- || --------- || --------- ||
+// G || 54| 55| 56|| 57| 58| 59|| 60| 61| 62||
+// H || 63| 64| 65|| 66| 67| 68|| 69| 70| 71||
+// I || 72| 73| 74|| 75| 76| 77|| 78| 79| 80||
+//   =========================================
+
+#include "BigArrays.h"
+
+	const uint8_t numSquares = 81;
+	const uint8_t numUnitList = 27;
+	const uint8_t numInUnitList = 9;	
+	const uint8_t numUnits = 3;
+	const uint8_t numInUnits = 9;	
+	const uint8_t numPeers = 20;
 };
-
-// this is used to programmically populate cells, units, unitlists and peers
-// it uses a vector because the return size is unknown
-// crossProduct will take any two iterables
-template <class T, class U>
-vector<RowCol> crossProduct (T a, U b) {
-    static vector<RowCol> v;
-    v.clear();
-    for(uint8_t aa : a) {
-        for (uint8_t bb : b) {
-            v.push_back(RowCol(aa,bb));
-        }
-    }
-	return v;
-}
 
 template<typename T>
 static std::string toBinaryString(const T& x)

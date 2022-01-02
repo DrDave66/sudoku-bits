@@ -13,7 +13,7 @@ add_executable(
     src/Guess.cpp 
     src/PrecisionTimeLapse.cpp 
     src/Puzzles.cpp 
-    src/RowCol.cpp 
     src/Sudoku.cpp 
-    src/SudokuBits.cpp)
+    src/SudokuBits.cpp
+)
 

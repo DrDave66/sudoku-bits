@@ -4,7 +4,6 @@
 #include "Puzzles.h"
 #include "Sudoku.h"
 #include "Guess.h"
-#include "RowCol.h"
 
 Puzzles::Puzzles()
 {

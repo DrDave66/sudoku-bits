@@ -1,10 +1,10 @@
 #include "Guess.h"
 
 Guess::Guess() {
-    square = RowCol(10,10);
+    square = 100;
     
 }
-Guess::Guess(RowCol _square, uint16_t _guess,SUDOKUTYPE& _puzzle, SUDOKUTYPE& _allowableValues) {
+Guess::Guess(SQUARE _square, uint16_t _guess,SUDOKUTYPE& _puzzle, SUDOKUTYPE& _allowableValues) {
     memcpy(puzzle,_puzzle,sizeof(SUDOKUTYPE));
     memcpy(allowableValues, _allowableValues, sizeof(SUDOKUTYPE));
     square = _square;

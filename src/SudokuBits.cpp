@@ -6,6 +6,7 @@
 #include <fstream>
 #include <random>
 #include <chrono>
+#include <iomanip>
 
 
 using std::fstream;
@@ -15,12 +16,13 @@ using std::cout;
 using std::endl;
 using std::min;
 using std::max;
+using std::setw;
+            
 
 #include "Puzzles.h"
 #include "Sudoku.h"
 #include "PrecisionTimeLapse.h"
 #include "SudokuTypes.h"
-#include "RowCol.h"
 #include "Guess.h"
 // solved with ones/peers
 string grid1 =   "..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..";
@@ -44,6 +46,7 @@ string p3 = "6..4....5.92.3.....4.76.23.......37..6...1.2.329.......1.....829.3.
 string s1 = "248916375357284619916735248432897561861523497795461832673152984584679123129348756";
 string s2 = "587324961914765823362189754821593647756841239493672518148257396279436185635918472";
 string s3 = "631482795792135648845769231158296374467351829329847156516973482983624517274518963";
+string oo = "1.2.3.4.5.6.7.8.9................................................................";
 
 
 // Loaded 100 		puzzles in 0.784945 msec, 7.849450 usec/puzzle
@@ -56,8 +59,19 @@ string s3 = "6314827957921356488457692311582963744673518293298471565169734829836
 // 100P 0 ..4.83..2.51..43......9671.12.8....6.4....5..83.6.79...6.3.9.4...7...2.5.9..5.8.3
 #define xSHORTMAIN
 #ifdef SHORTMAIN
+// uint8_t RCToNumber(RowCol& rc) {
+// 	return rc.row*9 + rc.col;
+// }
 
 int main() {
+	Sudoku s(grid2);
+	s.printPuzzle();
+	s.printAllowableValues();
+	s.solvePuzzle();
+	s.printPuzzle();
+	s.printAllowableValues();
+	printf("Is solved %d\n", s.isPuzzleSolved());
+
 }
 
 #else

@@ -13,20 +13,28 @@
 #include <chrono>
 #include <random>
 
+std::uniform_int_distribution<uint8_t> rand08(0,8);	
+std::uniform_int_distribution<uint16_t> rand01M(0,16959);	
+
+
+string squareToText(SQUARE s) {
+    uint8_t r,c;
+    string retval;
+    retval.clear();
+    r = s / 9;
+    c = s % 9;
+    retval += (char)('A' + r);
+    retval += (char)('1' + c);
+	return retval;
+}
 
 /**
  * @brief Construct a new Sudoku:: Sudoku object
  *
  */
-
-std::uniform_int_distribution<uint8_t> rand08(0,8);	
-std::uniform_int_distribution<uint16_t> rand01M(0,16959);	
-
-
-
 Sudoku::Sudoku()
 {
-    createVectors();
+    init();
     clearPuzzle();
 }
 
@@ -37,7 +45,7 @@ Sudoku::Sudoku()
  */
 Sudoku::Sudoku(string puzzle)
 {
-    createVectors();
+    init();
     clearPuzzle();
     setPuzzle(puzzle);
 }
@@ -51,7 +59,7 @@ Sudoku::Sudoku(string puzzle)
  * from the Python verison (which referred to cells (e.g. "A1") as string for
  * use as keys in map variables) rather than reimplement from scratch.
  */
-void Sudoku::createVectors(void)
+void Sudoku::init(void)
 {
     // seed PRNG 
 	generator.seed((unsigned)std::chrono::system_clock::now().time_since_epoch().count());
@@ -69,181 +77,56 @@ void Sudoku::createVectors(void)
     pushGuessCount=0;
     singleBitSetCount=0;
     array<Guess, 81> guessList; // ordered list of guesses
-    uint8_t i;
-    for (i = 0; i < 9; i++)
-    {
-        rows[i] = i;
-        cols[i] = i;
-        bits[i] = i;
-        arr08[i] = i;
-    }
-    vector<RowCol> rcv;
-    for (uint8_t b = 0 ; b < 9 ; b++) 
-    {
-        bitMask[b] = 0b0000'0000'0000'0001 << b;
-    }
-    bitMask[10] = 1 << 9; // used for saying a puzzle square is empty
-    // // init the puzzle and allowableValues array
-    // for (uint8_t r = 0 ; r < 9 ; r++) 
-    // {
-    //     for (uint8_t c = 0 ; c < 9 ; c++) 
-    //     {
-    //         puzzle[r][c] = ALL_CLEAR;
-    //         allowableValues[r][c] = ALL_SET;
-    //     }
-    // }
-    // create unitlist array
-    vector<RowCol> temp;
-    uint8_t ul = 0;
-    array<RowCol, 9> ts;
-    vector<uint8_t> v1;
-    ul = 0;
-    // for each col across the rows
-    // crossProduct routine needs two iterables, so create a one element vector
-    for (uint8_t c = 0 ; c < 9 ; c++)  {
-        v1.clear();
-        v1.push_back(c);
-        temp = crossProduct(arr08, v1);
-        i = 0;
-        for (RowCol s : temp)
-        {
-            unitList[ul][i] = s;
-            i++;
-        }
-        ul++;
-    }
-    // for each row across the cols
-    for (uint8_t r = 0 ; r < 9 ; r++) 
-    {
-        v1.clear();
-        v1.push_back(r);
-        temp = crossProduct(v1, arr08);
-        i = 0;
-        for (RowCol s : temp)
-        {
-            unitList[ul][i] = s;
-            i++;
-        }
-        ul++;
-    }
-    // for each 3x3 square
-    vector<vector<uint8_t>> sr;
-    vector<vector<uint8_t>> sc;
-    sr.push_back(vector<uint8_t>{0, 1, 2});
-    sr.push_back(vector<uint8_t>{3, 4, 5});
-    sr.push_back(vector<uint8_t>{6, 7, 8});
-    sc.push_back(vector<uint8_t>{0, 1, 2});
-    sc.push_back(vector<uint8_t>{3, 4, 5});
-    sc.push_back(vector<uint8_t>{6, 7, 8});
-    for (vector<uint8_t> r : sr)
-    {
-        for (vector<uint8_t> c : sc)
-        {
-            i = 0;
-            temp = crossProduct(r, c);
-            for (RowCol s : temp)
-            {
-                unitList[ul][i] = s;
-                i++;
-            }
-            ul++;
-        }
-    }
+
 #ifdef PRINTVECTORS
-    cout << endl
-         << "UnitList" << endl;
-    for (uint8_t j = 0; j < 27; j++)
-    {
-        for (i = 0; i < 9; i++)
-        {
-            cout << unitList[j][i] << " ";
+    cout << endl << endl << "Squares " << endl;
+
+    for(auto r:rows) {
+        for (auto c:cols) {
+            cout << squareToText(c + r*9) << " ";
+        }
+        cout << endl;
+    }
+    cout << "UnitList" << endl;
+    for( int8_t ul = 0 ; ul < 27 ; ul++) {
+        for (int8_t s = 0 ; s < 9 ; s++) {
+            cout << squareToText(unitlist[ul][s]) << " ";
         }
         cout << endl;
     }
     cout << endl
          << endl;
-#endif
-    //  create units
-    RowCol sq;
-    uint8_t unum = 0;
-    for (uint8_t r = 0 ; r < 9 ; r++) 
-    {
-        for (uint8_t c = 0 ; c < 9 ; c++) 
-        {
-            unum = 0;
-            sq.set(r, c);
-            for (array<RowCol, 9> ul : unitList)
-            {
-                for (i = 0; i < 9; i++)
-                {
-                    if (ul[i] == sq)
-                    {
-                        units[r][c][unum] = ul;
-                        unum++;
-                    }
-                }
-            }
-        }
-    }
-#ifdef PRINTVECTORS
+
     cout << endl
          << endl;
+    uint8_t sq;
     for (uint8_t r = 0 ; r < 9 ; r++) 
     {
         for (uint8_t c = 0 ; c < 9 ; c++) 
         {
-            sq.set(r, c);
-            cout << "New Unit Dict: " << sq << " " << endl;
+            sq = c + r*9;
+            cout << "New Unit Dict: " << squareToText(sq) << " " << endl;
             for (int unum = 0; unum < 3; unum++)
             {
                 for (i = 0; i < 9; i++)
                 {
-                    cout << units[r][c][unum][i] << " ";
+                    cout << squareToText(units[sq][unum][i]) << " ";
                 }
                 cout << endl;
             }
             cout << endl;
         }
     }
-#endif
-    // make peer array
-    int pnum = 0;
-    // use a set so that each value can only appear once
-    set<RowCol> peerSet;
-    for (uint8_t r = 0 ; r < 9 ; r++) 
-    {
-        for (uint8_t c = 0 ; c < 9 ; c++) 
-        {
-            pnum = 0;
-            peerSet.clear();
-            sq.set(r, c);
-            for (array<RowCol, 9> ul : units[r][c])
-            {
-                for (RowCol u : ul)
-                {
-                    if (u != sq)
-                    {
-                        peerSet.insert((const RowCol)u);
-                    }
-                }
-            }
-            for (RowCol ps : peerSet)
-            {
-                peers[r][c][pnum] = ps;
-                pnum++;
-            }
-        }
-    }
 
-#ifdef PRINTVECTORS
+    cout << endl << endl << "Peers" << endl;
     for (uint8_t r = 0 ; r < 9 ; r++) 
     {
         for (uint8_t c = 0 ; c < 9 ; c++) 
         {
-            cout << RowCol(r, c) << " - ";
-            for (RowCol p : peers[r][c])
-            {
-                cout << p.toString() << " ";
+            uint8_t sq = c + r*9;
+            cout << squareToText(sq) << " - ";
+            for(uint8_t p = 0 ; p < 20 ; p++) {
+                cout << squareToText(peers[sq][p]) << " " ;
             }
             cout << endl;
         }
@@ -258,13 +141,9 @@ void Sudoku::createVectors(void)
 void Sudoku::clearPuzzle(void)
 {
     clearPuzzleCount++;
-    for (uint8_t r = 0 ; r < 9 ; r++) 
-    {
-        for (uint8_t c = 0 ; c < 9 ; c++) 
-        {
-            puzzle[r][c] = ALL_CLEAR;
-            allowableValues[r][c] = ALL_SET;
-        }
+    for (uint8_t sq = 0 ; sq < 81 ; sq ++) {
+        puzzle[sq] = ALL_CLEAR;
+        allowableValues[sq] = ALL_SET;
     }
 }
 
@@ -286,19 +165,15 @@ bool Sudoku::setPuzzle(string p)
     if (p.size() < 81)
         return false;
     clearPuzzle();
-    for (uint8_t r = 0 ; r < 9 ; r++) 
-    {
-        for (uint8_t c = 0 ; c < 9 ; c++) 
+    for(uint8_t sq = 0 ; sq < numSquares ; sq++) {
+        v = p[sq];
+        if (v == '.')
+            b = 9;
+        else
+            b = (v - '1'); // which bit to set
+        if (setValue(sq, bitMask[b]) == false)
         {
-            v = p[c + r * 9];
-            if (v == '.')
-                b = 10;
-            else
-                b = (v - '1'); // which bit to set
-            if (setValue(r, c, bitMask[b]) == false)
-            {
-                return false;
-            }
+            return false;
         }
     }
     return true;
@@ -342,7 +217,7 @@ void Sudoku::printPuzzle(void)
         cout << (char)('A' + r) << " " << col_sep;
         for (uint8_t c = 0 ; c < 9 ; c++) 
         {
-           if (puzzle[r][c] == ALL_CLEAR)
+           if (puzzle[c + r*9] == ALL_CLEAR)
             {
                 cout << " .";
             }
@@ -350,7 +225,7 @@ void Sudoku::printPuzzle(void)
             {
                 for (uint8_t b = 0 ; b < 9 ; b++) 
                 {
-                    if ((puzzle[r][c] & bitMask[b]) > 0)
+                    if ((puzzle[c + r*9] & bitMask[b]) > 0)
                     {
                         cout << " " << b + 1;
                     }
@@ -401,7 +276,7 @@ void Sudoku::printAllowableValues(void)
         cout << (char)('A' + r) << " " << col_sep;
         for (uint8_t c = 0 ; c < 9 ; c++) 
         {
-            if (puzzle[r][c] != ALL_CLEAR)
+            if (puzzle[c + r*9] != ALL_CLEAR)
             {
                 outstr = " ";
             }
@@ -410,7 +285,7 @@ void Sudoku::printAllowableValues(void)
                 stringstream ss;
                 for (uint8_t b = 0 ; b < 9 ; b++) 
                 {
-                    if ((allowableValues[r][c] & bitMask[b]) > 0)
+                    if ((allowableValues[c + r*9] & bitMask[b]) > 0)
                     {
                         ss << int(b + 1);
                     }
@@ -443,11 +318,11 @@ void Sudoku::printAllowableValues(void)
     }
 }
 
-/**
- * @brief Prints formatted allowable value matrix with title
- *
- * @param string The title for the allowable value matrix
- */
+// /**
+//  * @brief Prints formatted allowable value matrix with title
+//  *
+//  * @param string The title for the allowable value matrix
+//  */
 void Sudoku::printAllowableValues(string title)
 {
     cout << endl
@@ -455,9 +330,9 @@ void Sudoku::printAllowableValues(string title)
     printAllowableValues();
 }
 
-/**********************************************************
- **********   Solving Functions ***************************
- ***********************************************************/
+// /**********************************************************
+//  **********   Solving Functions ***************************
+//  ***********************************************************/
 
 /**
  * @brief Sets the value of a cell in a puzzle
@@ -468,74 +343,58 @@ void Sudoku::printAllowableValues(string title)
  * @return true if successful
  * @return false if fails
  */
-bool Sudoku::setValue(uint8_t r, uint8_t c, BITMASK bm)
+bool Sudoku::setValue(SQUARE sq, BITMASK bm)
 {
-//    cout << "SV " << (char)('A' + r) << (char)('1' + c) << " " << toBinaryString(bm) << endl;
+    // uint8_t r = sq / 9;
+    // uint8_t c = sq % 9;
+    // cout << "SV " << (char)('A' + (sq/9)) << (char)('1' + (sq%9)) << " " << toBinaryString(bm) << endl;
     setValueCount++;
-    if (bm == bitMask[10])
+    if (bm == bitMask[9])
     { // if value is empty
-        puzzle[r][c] = ALL_CLEAR;
+        puzzle[sq] = ALL_CLEAR;
         return true;
     }
     else
     { // if value is real
         // make sure the value is allowed to be set
-        if ((allowableValues[r][c] & bm) == 0)
+        if ((allowableValues[sq] & bm) == 0)
         {
             // if not, return value
             return false;
         }
         // set value and clear allowableValues
-        puzzle[r][c] = bm;
-        allowableValues[r][c] = 0;
+        puzzle[sq] = bm;
+        allowableValues[sq] = 0;
     }
     // propagate value to all peers, removing it from their allowable values
     uint16_t tbm = ~bm;
-    for (RowCol p : peers[r][c])
+    for (uint8_t p = 0 ; p < numPeers ; p++)
     {
-        allowableValues[p.row][p.col] &= tbm;
+        allowableValues[peers[sq][p]] &= tbm;
     }
     return true;
 }
 
-/**
- * @brief set value using RowCol and a bitset<9> for the value (comes from guessing)
- *
- * @param rc RowCol of cell
- * @param bit bitset indicating which bit to set
- * @return true if successful
- * @return false if failed
- */
-bool Sudoku::setValue(RowCol rc, BITMASK bm)
-{
-    setValueRCCount++;
-    return setValue(rc.row, rc.col, bm);
-}
-
-/**
- * @brief solves for cells with a single available value, then for units
- * with only one occurance of a particular value
- *
- */
-void Sudoku::solveOnes(void)
-{
+// /**
+//  * @brief solves for cells with a single available value, then for units
+//  * with only one occurance of a particular value
+//  *
+//  */
+ void Sudoku::solveOnes(void)
+ {
     solveOnesCount++;
     bool solvedSome = true; // set to true to allow one iteration
     while (solvedSome == true)
     { // we don't want to keep doing this if we are not finding solutions
         while (solvedSome == true)
-       {
+        {    
             solvedSome = false; // set to false.  will be set to true if a value is set
             // find squares with only one available value
-            for (uint8_t r = 0 ; r < 9 ; r++) 
-            {
-                for (uint8_t c = 0 ; c < 9 ; c++) 
-                {
-                    if (countBits(allowableValues[r][c]) == 1)
-                    {                                                        // if cell has only one available value
-                        solvedSome = true;                                   // set flag to repeat loop
-                        setValue(r, c, bitMask[singleBitSet(allowableValues[r][c])]); // set the value
-                    }
+            for(uint8_t sq = 0 ; sq < 81 ; sq++) {
+                if (countBits(allowableValues[sq]) == 1)
+                {                                                        // if cell has only one available value
+                    solvedSome = true;                                          // set flag to repeat loop
+                    setValue(sq, bitMask[singleBitSet(allowableValues[sq])]);   // set the value
                 }
             }
         }
@@ -545,12 +404,12 @@ void Sudoku::solveOnes(void)
         uint8_t bitCount;
         for (uint8_t b = 0 ; b < 9 ; b++) 
         { // loop through all digits
-            for (array<RowCol, 9> ul : unitList)
+            for (uint8_t ul = 0 ; ul < numUnitList ; ul++)
             { // loop through all unitlists
                 bitCount = 0;
-                for (RowCol rc : ul)
+                for (uint8_t sq = 0 ; sq < numInUnitList ; sq++)
                 {                                                   // loops through all RowCols in each unit
-                    if((allowableValues[rc.row][rc.col] & bitMask[b]) != 0) // add up number of times bit it set
+                    if((allowableValues[sq] & bitMask[b]) != 0) // add up number of times bit it set
                         bitCount++;
                     if (bitCount > 1)
                     {
@@ -558,12 +417,12 @@ void Sudoku::solveOnes(void)
                     }
                 }
                 if (bitCount == 1)
-                { // if bit is only set once
-                    for (RowCol rc : ul)
+                { // if bit is only set once, search and find where it was
+                    for (uint8_t sq = 0 ; sq < numInUnitList ; sq++)
                     {
-                        if ((allowableValues[rc.row][rc.col] & bitMask[b]) == 1)
+                        if ((allowableValues[sq] & bitMask[b]) == 1)
                         {                                // find where the bit was set
-                            setValue(rc.row, rc.col, bitMask[b]); // and set the value
+                            setValue(sq, bitMask[b]); // and set the value
                             solvedSome = true;           // flag to repeat loop
                         }
                     }
@@ -571,32 +430,32 @@ void Sudoku::solveOnes(void)
             }
         }
     }
-    return;
 }
 
-/**
- * @brief determine if a puzzle is solved.  each unit should have all possible values
- *
- * @return true
- * @return false
- */
+    
+// /**
+//  * @brief determine if a puzzle is solved.  each unit should have all possible values
+//  *
+//  * @return true
+//  * @return false
+//  */
 bool Sudoku::isPuzzleSolved(void)
 {
     isPuzzleSolvedCount++;
     // a puzzle is solved if each unit in unitlist contains values of 1-9
     uint16_t bs = 0; // an accumulator for the bits set
-    RowCol rc;
-    for (array<RowCol, 9> ul : unitList)
-    {               // for each unit in the unitlist
+    
+    for (int8_t ul = 0 ; ul < 27 ; ul++)
+    {   // for each unit in the unitlist
         bs = 0; // clear accumulator
-        for (RowCol rc : ul)
+        for (uint8_t sq = 0 ; sq < 9 ; sq++)
         {                                 // for each cell in the unit
-            bs |= puzzle[rc.row][rc.col]; // or its set bit
+            bs |= puzzle[unitlist[ul][sq]]; // or its set bit
         }
         if (bs != ALL_SET) // if all bits are not set, return false
             return false;
     }
-    return true; // if we get here, all bits were set in all units
+   return true; // if we get here, all bits were set in all units
 }
 
 /**
@@ -607,14 +466,14 @@ bool Sudoku::isPuzzleSolved(void)
  * @return true if successful
  * @return false if the allowableValue element does not permit that bit to be guessed (never happens)
  */
-bool Sudoku::removeGuess(RowCol rc, BITMASK b)
+bool Sudoku::removeGuess(SQUARE sq, BITMASK b)
 {
     removeGuessCount++;
-    if ((allowableValues[rc.row][rc.col] & b) == 0) // if guess is not allowable, return value
+    if ((allowableValues[sq] & b) == 0) // if guess is not allowable, return value
         return false;
     else
     {
-        allowableValues[rc.row][rc.col] &= ~b; // clear the bit for the value that was guessed
+        allowableValues[sq] &= ~b; // clear the bit for the value that was guessed
          return true;
     }
 }
@@ -627,13 +486,10 @@ bool Sudoku::removeGuess(RowCol rc, BITMASK b)
 bool Sudoku::guessesRemain(void)
 {
     guessesRemainCount++;
-    for (uint8_t r = 0 ; r < 9 ; r++) 
+    for(uint8_t sq = 0 ; sq < 81 ; sq++) 
     {
-        for (uint8_t c = 0 ; c < 9 ; c++) 
-        {
-            if (countBits(allowableValues[r][c])> 1)
-                return true;
-        }
+        if (countBits(allowableValues[sq])> 1)
+            return true;
     }
     return false;
 }
@@ -683,40 +539,32 @@ Guess Sudoku::getGuess()
     uint8_t minCount = 9;
     // iterate through squares and get lowest count > 1
     uint8_t len;
-    for (uint8_t r = 0 ; r < 9 ; r++) 
-    {
-        for (uint8_t c = 0 ; c < 9 ; c++) 
+    for(uint8_t sq = 0 ; sq < 81 ; sq++) {
+        len = countBits(allowableValues[sq]);
+        if (len > 1)
         {
-            len = countBits(allowableValues[r][c]);
-            if (len > 1)
+            if (len < minCount)
             {
-                if (len < minCount)
-                {
-                    minCount = len;
-                }
+                minCount = len;
             }
         }
     }
     // now that we have minCount, find all cells with that count
     // must be a vector as we don't know the size
-    vector<RowCol> subset;
-    for (uint8_t r = 0 ; r < 9 ; r++) 
-    {
-        for (uint8_t c = 0 ; c < 9 ; c++) 
+    vector<SQUARE> subset;
+   for(uint8_t sq = 0 ; sq < 81 ; sq++) {
+        if (countBits(allowableValues[sq]) == minCount)
         {
-            if (countBits(allowableValues[r][c]) == minCount)
-            {
-                subset.push_back(RowCol(r, c));
-            }
+            subset.push_back(sq);
         }
     }
     // select random vector
-    RowCol square = subset[rand01M(generator) % subset.size()];
+    SQUARE square = subset[rand01M(generator) % subset.size()];
     // select random bit
     vector<uint8_t> vBits;
     for (uint8_t b = 0 ; b < 9 ; b++) 
     {
-        if ((allowableValues[square.row][square.col] & bitMask[b] ) != 0)
+        if ((allowableValues[square] & bitMask[b] ) != 0)
         {
             vBits.push_back(b);
         }
@@ -756,7 +604,6 @@ void Sudoku::pushGuess(const Guess guess)
     pushGuessCount++;
     guessList[guessNumber] = guess;
     guessNumber++;
-
 }
 
 /**
@@ -771,7 +618,7 @@ void Sudoku::printGuessList()
     {
         for (uint8_t i = 0; i < guessNumber; i++)
         {
-            cout << guessList[i].square << ":" << guessList[i].guess << " ";
+            cout  << squareToText(guessList[i].square) << ":" << guessList[i].guess << " ";
         }
     }
     cout << "                                                       \r"
@@ -834,8 +681,8 @@ bool Sudoku::startGuessing()
 /**
  * @brief called after we determine only one bit is set, and returns the set bit
  *
- * @param bs a bitset<9>
- * @return uint8_t which bit is set
+ * @param bs a 16-bit value
+ * @return uint8_t which bit is 
  */
 uint8_t Sudoku::singleBitSet(uint16_t bs)
 {
