@@ -52,18 +52,15 @@ Sudoku::Sudoku(string puzzle)
 
 #define xPRINTVECTORS
 /**
- * @brief constructs all of the RowCol arrays we need for later looping
+ * @brief sets initial counts to zero and seeds the RNG
  *
- * This is a difficult implementation to follow.  I had a nice implmentation
- * in Python that worked.  Rather an fully reimplement it, i used the concepts
- * from the Python verison (which referred to cells (e.g. "A1") as string for
- * use as keys in map variables) rather than reimplement from scratch.
  */
 void Sudoku::init(void)
 {
     // seed PRNG 
 	generator.seed((unsigned)std::chrono::system_clock::now().time_since_epoch().count());
     startGuessingCount=0;
+    countBitsCount=0;
     clearPuzzleCount=0;
     setPuzzleCount=0;
     setValueCount=0;
@@ -167,7 +164,7 @@ bool Sudoku::setPuzzle(string p)
     clearPuzzle();
     for(uint8_t sq = 0 ; sq < numSquares ; sq++) {
         v = p[sq];
-        if (v == '.')
+        if (v == '.' || v == '0')
             b = 9;
         else
             b = (v - '1'); // which bit to set
@@ -347,11 +344,17 @@ bool Sudoku::setValue(SQUARE sq, BITMASK bm)
 {
     // uint8_t r = sq / 9;
     // uint8_t c = sq % 9;
-    // cout << "SV " << (char)('A' + (sq/9)) << (char)('1' + (sq%9)) << " " << toBinaryString(bm) << endl;
+    // uint8_t bitSet = singleBitSet(bm);
+    // char output;
+    // if(bitSet == 10)
+    //     output = '.';
+    // else
+    //     output = '1' + bitSet;
+    // cout << "SV " << (char)('A' + (sq/9)) << (char)('1' + (sq%9)) << " " << output << endl;
     setValueCount++;
     if (bm == bitMask[9])
     { // if value is empty
-        puzzle[sq] = ALL_CLEAR;
+        puzzle[sq] = ALL_CLEAR; // don't mess with allowable values
         return true;
     }
     else
@@ -359,7 +362,7 @@ bool Sudoku::setValue(SQUARE sq, BITMASK bm)
         // make sure the value is allowed to be set
         if ((allowableValues[sq] & bm) == 0)
         {
-            // if not, return value
+            // if not, return false
             return false;
         }
         // set value and clear allowableValues
@@ -407,9 +410,9 @@ bool Sudoku::setValue(SQUARE sq, BITMASK bm)
             for (uint8_t ul = 0 ; ul < numUnitList ; ul++)
             { // loop through all unitlists
                 bitCount = 0;
-                for (uint8_t sq = 0 ; sq < numInUnitList ; sq++)
+                for (uint8_t sq = 0 ; sq < numInUnits ; sq++)
                 {                                                   // loops through all RowCols in each unit
-                    if((allowableValues[sq] & bitMask[b]) != 0) // add up number of times bit it set
+                    if((allowableValues[unitlist[ul][sq]] & bitMask[b]) != 0) // add up number of times bit it set
                         bitCount++;
                     if (bitCount > 1)
                     {
@@ -418,11 +421,11 @@ bool Sudoku::setValue(SQUARE sq, BITMASK bm)
                 }
                 if (bitCount == 1)
                 { // if bit is only set once, search and find where it was
-                    for (uint8_t sq = 0 ; sq < numInUnitList ; sq++)
+                    for (uint8_t sq = 0 ; sq < numInUnits ; sq++)
                     {
-                        if ((allowableValues[sq] & bitMask[b]) == 1)
+                        if ((allowableValues[unitlist[ul][sq]] & bitMask[b]) != 0)
                         {                                // find where the bit was set
-                            setValue(sq, bitMask[b]); // and set the value
+                            setValue(unitlist[ul][sq], bitMask[b]); // and set the value
                             solvedSome = true;           // flag to repeat loop
                         }
                     }
@@ -501,7 +504,6 @@ bool Sudoku::guessesRemain(void)
  */
 Guess Sudoku::getGuessRandom()
 {
-
     // // guess is returned as square,value in an array of bits
     // // select random vector
     // bool squareIsEmpty = false;
@@ -678,22 +680,6 @@ bool Sudoku::startGuessing()
     return isPuzzleSolved();
 }
 
-/**
- * @brief called after we determine only one bit is set, and returns the set bit
- *
- * @param bs a 16-bit value
- * @return uint8_t which bit is 
- */
-uint8_t Sudoku::singleBitSet(uint16_t bs)
-{
-    singleBitSetCount++;
-    for (uint8_t b = 0 ; b < 9 ; b++) 
-    {
-        if (bs & bitMask[b])
-            return b;
-    }
-    return 10;
-}
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat="
@@ -712,17 +698,57 @@ void Sudoku::printCounts() {
     printf("getGuess            %'lu\n",getGuessCount);
     printf("popGuess            %'lu\n",popGuessCount);
     printf("pushGuess           %'lu\n",pushGuessCount);
+    printf("countBitsCount      %'lu\n",countBitsCount);
     printf("singleBitSet        %'lu\n",singleBitSetCount);
 }
 #pragma GCC diagnostic pop
 
-uint8_t Sudoku::countBits(uint16_t x) {
+
+uint8_t Sudoku::countBits(uint16_t bs) {
+    countBitsCount++;
     uint8_t result = 0;
     // strip one set bit per iteration
-    while (x != 0)
+    // while only count until the remaining bits are zero
+    while (bs != 0)
     {
-        x &= x-1;
+        bs &= bs-1;
         result++;
     }
     return result;
+
+
+    // for (uint8_t b = 0 ; b < 9 ; b++) 
+    // {
+    //     if (bs & bitMask[b])
+    //         result++;
+    // }
+    // return result;
+}
+
+/**
+ * @brief called after we determine only one bit is set, and returns the set bit
+ *
+ * @param bs a 16-bit value
+ * @return uint8_t which bit is 
+ */
+uint8_t Sudoku::singleBitSet(uint16_t bs)
+{
+    singleBitSetCount++;
+
+    // strip one set bit per iteration
+    // while only count until the remaining bits are zero
+    // uint8_t result = 0;
+    // while (bs != 0)
+    // {
+    //     bs >>= 1;
+    //     result++;
+    // }
+    // return result-1;
+
+    for (uint8_t b = 0 ; b < 9 ; b++) 
+    {
+        if (bs & bitMask[b])
+            return b;
+    }
+    return 10;
 }

@@ -28,6 +28,7 @@ using std::setw;
 string grid1 =   "..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..";
 string grid3 =   "8.2.5.7.1..7.8246..1.9.....6....18325.......91843....6.....4.2..9561.3..3.8.9.6.7";
 // not solved with ones/peers
+string needguess=".61.2.....4.6.59..392...5.882...9..74....3......48...3..7..21...1..7....98..146.2";
 string easy505 = "1..92....524.1...........7..5...81.2.........4.27...9..6...........3.945....71..6";
 string grid2 =   "4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......";
 string hard1 =   ".....6....59.....82....8....45........3........6..3.54...325..6..................";
@@ -64,14 +65,10 @@ string oo = "1.2.3.4.5.6.7.8.9..................................................
 // }
 
 int main() {
-	Sudoku s(grid2);
-	s.printPuzzle();
-	s.printAllowableValues();
-	s.solvePuzzle();
-	s.printPuzzle();
-	s.printAllowableValues();
-	printf("Is solved %d\n", s.isPuzzleSolved());
-
+	Sudoku s;
+	for(uint8_t b = 0 ; b < 10 ; b++) {
+		printf("%s %d\n",toBinaryString(s.bitMask[b]).c_str(),s.singleBitSet(s.bitMask[b]));
+	}
 }
 
 #else
@@ -111,6 +108,7 @@ int main()
 				//654...8.387.364.9...2.........4.26..9...574..4256.8.......8.54........212.65..3..
 				//printf("puzzle %d needed a %d guesses\n",i,s.guessNumber);
 				//cout << pf.getPuzzle(i) << endl;
+				return 1;
 			}
 		}
 		else {

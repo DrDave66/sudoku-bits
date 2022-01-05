@@ -47,7 +47,7 @@ public:
 	void printPuzzle(string title);
 	void printAllowableValues(void);
 	void printAllowableValues(string title);
-	static string bitsToString(uint16_t bits);
+//	static string bitsToString(uint16_t bits);
 
 	void solveOnes(void);
 	uint64_t solveOnesCount;
@@ -69,6 +69,7 @@ public:
 	uint64_t startGuessingCount;
 	void printGuessList();
 	uint8_t countBits(uint16_t num);
+	uint64_t countBitsCount;
 	uint8_t singleBitSet(uint16_t b);
 	uint64_t singleBitSetCount;
 	void printCounts();
@@ -125,6 +126,9 @@ public:
 // I || 72| 73| 74|| 75| 76| 77|| 78| 79| 80||
 //   =========================================
 
+//	const SQUARE peers[81][20] = {
+//  const SQUARE units[81][3][9] = {
+//	const SQUARE unitlist[27][9]= {
 #include "BigArrays.h"
 
 	const uint8_t numSquares = 81;
