@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <thread>
 #include <chrono>
 #include <iomanip>
 
@@ -65,17 +66,18 @@ string oo = "1.2.3.4.5.6.7.8.9..................................................
 // }
 
 int main() {
-	Sudoku s;
-	for(uint8_t b = 0 ; b < 10 ; b++) {
-		printf("%s %d\n",toBinaryString(s.bitMask[b]).c_str(),s.singleBitSet(s.bitMask[b]));
-	}
+	PrecisionTimeLapse ptl;
+	ptl.start();
+	std::this_thread::sleep_for (std::chrono::seconds(3));
+	ptl.stop();
+	printf("time lapse was %f\n",ptl.elapsed());
 }
 
 #else
 
 int main()
 {
-	Puzzles pf("../../sudoku-puzzles/1MP.txt");
+	Puzzles pf("../../sudoku-puzzles/Guesses.txt");
 	cout << pf.getNumberOfPuzzles() << " puzzles loaded" << endl << endl << endl;
 	if (pf.getNumberOfPuzzles() == 0)
 		return 1;
@@ -100,15 +102,13 @@ int main()
 		time = ptl.elapsed();
 
 		if (isSolved == true)
-		{ //puzzle 7734746 needed a guess
+		{ 
    			solved += 1;
 			if(s.guessNumber != 0) {
 				guessed++;
 				//puzzle 7734746 needed a guess
-				//654...8.387.364.9...2.........4.26..9...574..4256.8.......8.54........212.65..3..
 				//printf("puzzle %d needed a %d guesses\n",i,s.guessNumber);
 				//cout << pf.getPuzzle(i) << endl;
-				return 1;
 			}
 		}
 		else {
@@ -139,3 +139,5 @@ int main()
 // 1MP better loops			Min time: 0.005765 ms, Max time: 6.95828 ms, Average Time: 0.00742397 ms, Total: 10.232687 sec
 
 // 10MP						Min time: 0.003219 ms, Max time: 68.2603 ms, Average Time: 0.0180983 ms, Total: 220.961769 sec
+// 10MP bit 1/5				Min time: 0.000882 ms, Max time: 49.7904 ms, Average Time: 0.00711188 ms, Total: 88.808665 sec
+//							Min time: 0.000498 ms, Max time: 28.1895 ms, Average Time: 0.00597333 ms, Total: 72.157265 sec

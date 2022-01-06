@@ -491,7 +491,7 @@ bool Sudoku::guessesRemain(void)
     guessesRemainCount++;
     for(uint8_t sq = 0 ; sq < 81 ; sq++) 
     {
-        if (countBits(allowableValues[sq])> 1)
+        if (countBits(allowableValues[sq])>= 1)
             return true;
     }
     return false;
@@ -551,6 +551,15 @@ Guess Sudoku::getGuess()
             }
         }
     }
+    if(minCount == 9) {// squares have only one guess left
+        for(uint8_t sq = 0 ; sq < 81 ; sq++) {
+            if (countBits(allowableValues[sq]) == 1)
+            {
+                //printAllowableValues();
+                return Guess(sq, allowableValues[sq], puzzle, allowableValues);
+            }
+    }       
+    } 
     // now that we have minCount, find all cells with that count
     // must be a vector as we don't know the size
     vector<SQUARE> subset;
