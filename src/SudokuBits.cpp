@@ -77,7 +77,7 @@ int main() {
 
 int main()
 {
-	Puzzles pf("../../sudoku-puzzles/Guesses.txt");
+	Puzzles pf("../../sudoku-puzzles/1MP.txt");
 	cout << pf.getNumberOfPuzzles() << " puzzles loaded" << endl << endl << endl;
 	if (pf.getNumberOfPuzzles() == 0)
 		return 1;

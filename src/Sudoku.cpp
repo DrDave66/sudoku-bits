@@ -715,15 +715,19 @@ void Sudoku::printCounts() {
 
 uint8_t Sudoku::countBits(uint16_t bs) {
     countBitsCount++;
-    uint8_t result = 0;
+    unsigned int c; // c accumulates the total bits set in v
+    // option 1, for at most 14-bit values in v:
+    c = (bs * 0x200040008001ULL & 0x111111111111111ULL) % 0xf;
+    return c;
     // strip one set bit per iteration
     // while only count until the remaining bits are zero
-    while (bs != 0)
-    {
-        bs &= bs-1;
-        result++;
-    }
-    return result;
+    // uint8_t result=0;
+    // while (bs != 0)
+    // {
+    //     bs &= bs-1;
+    //     result++;
+    // }
+    // return result;
 
 
     // for (uint8_t b = 0 ; b < 9 ; b++) 
@@ -760,4 +764,6 @@ uint8_t Sudoku::singleBitSet(uint16_t bs)
             return b;
     }
     return 10;
+
+
 }
