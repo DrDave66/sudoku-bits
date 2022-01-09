@@ -8,6 +8,8 @@
 #include <thread>
 #include <chrono>
 #include <iomanip>
+#include <algorithm>
+#include <vector>
 
 
 using std::fstream;
@@ -18,6 +20,7 @@ using std::endl;
 using std::min;
 using std::max;
 using std::setw;
+using std::count;
             
 
 #include "Puzzles.h"
@@ -59,25 +62,109 @@ string oo = "1.2.3.4.5.6.7.8.9..................................................
 // Loaded 10000000 	puzzles in 10631.764658 msec, 1.063176 usec/puzzle
 
 // 100P 0 ..4.83..2.51..43......9671.12.8....6.4....5..83.6.79...6.3.9.4...7...2.5.9..5.8.3
-#define xSHORTMAIN
+#define SHORTMAIN
 #ifdef SHORTMAIN
 // uint8_t RCToNumber(RowCol& rc) {
 // 	return rc.row*9 + rc.col;
 // }
 
 int main() {
-	PrecisionTimeLapse ptl;
-	ptl.start();
-	std::this_thread::sleep_for (std::chrono::seconds(3));
-	ptl.stop();
-	printf("time lapse was %f\n",ptl.elapsed());
-}
+ // out of the 9.8M puzzles with no guesses, make a histogram of the number of digits
+	Puzzles p("../../sudoku-puzzles/10MP.txt");
+	Sudoku s;
+	string filename = "Guesses.txt";
+	fstream file;
+	file.open(filename,ios::out);
+	string ostring;
+	if(file.is_open()) {
+		for (uint64_t i = 0 ; i < p.getNumberOfPuzzles() ; i++) {
+			s.setPuzzle(p.getPuzzle(i));
+			s.solvePuzzle();
+			if(s.isPuzzleSolved()) {
+				if(s.guessNumber != 0) {
+					ostring = p.getPuzzle(i);
+					//printf("%lu needed %d guesses\n", i, s.guessNumber);
+					file.write(ostring.c_str(), ostring.length());
+				}
+			}
+			if(i % 10000 == 0)
+				printf("%d\n",i);
+		}
+	}
+	file.close();
 
+	// uint64_t histogram[81];
+	// for(uint8_t i = 0 ; i < 81 ; i++) {
+	// 	histogram[i] = 0;
+	// }
+	// if (file.is_open()) {
+	//  	string str;
+	//  	while (getline(file, str)) {
+	// 		//str.replace(str.find_last_of("\n"),1,"");
+	// 		uint8_t ct = count(str.begin(), str.end(), '.');
+	// 		//printf("%s - %u \n",str.c_str(), ct);
+	// 		histogram[ct]++;
+	//  	}
+	// }	
+	// for(uint8_t i = 0 ; i < 81 ; i++) {
+	// 	printf("%u - %lu\n", i, histogram[i]);
+	// }
+}
+// no guesses
+// 41 - 0
+// 42 - 0
+// 43 - 0
+// 44 - 57
+// 45 - 12662
+// 46 - 198940
+// 47 - 455004
+// 48 - 263913
+// 49 - 61122
+// 50 - 7748
+// 51 - 526
+// 52 - 28
+// 53 - 0
+// 54 - 0
+// 55 - 0
+
+// // guesses
+// 30 - 0
+// 31 - 2
+// 32 - 2
+// 33 - 8
+// 34 - 20
+// 35 - 39
+// 36 - 58
+// 37 - 134
+// 38 - 252
+// 39 - 495
+// 40 - 823
+// 41 - 1395
+// 42 - 2456
+// 43 - 3997
+// 44 - 6524
+// 45 - 10080
+// 46 - 14317
+// 47 - 19593
+// 48 - 24934
+// 49 - 28170
+// 50 - 28597
+// 51 - 25172
+// 52 - 18684
+// 53 - 11479
+// 54 - 5356
+// 55 - 1885
+// 56 - 439
+// 57 - 72
+// 58 - 6
+// 59 - 0
+// 60 - 0
+// 61 - 0
 #else
 
 int main()
 {
-	Puzzles pf("../../sudoku-puzzles/1MP.txt");
+	Puzzles pf("../../sudoku-puzzles/Guesses.txt");
 	cout << pf.getNumberOfPuzzles() << " puzzles loaded" << endl << endl << endl;
 	if (pf.getNumberOfPuzzles() == 0)
 		return 1;
@@ -94,20 +181,21 @@ int main()
 	bool isSolved;
 	uint16_t guessed = 0;
 	uint32_t onePercent = (uint32_t)(pf.getNumberOfPuzzles()/100);
+	vector<uint32_t> needed_guesses;
 	for (uint32_t i = 0; i < pf.getNumberOfPuzzles(); i++) {
 		s.setPuzzle(pf.getPuzzle(i));
 		ptl.start();
 		isSolved = s.solvePuzzle();
 		ptl.stop();
 		time = ptl.elapsed();
-
 		if (isSolved == true)
 		{ 
    			solved += 1;
 			if(s.guessNumber != 0) {
 				guessed++;
+				needed_guesses.push_back(i);
 				//puzzle 7734746 needed a guess
-				//printf("puzzle %d needed a %d guesses\n",i,s.guessNumber);
+				// printf("puzzle %d needed a %d guesses\n",i,s.guessNumber);
 				//cout << pf.getPuzzle(i) << endl;
 			}
 		}
@@ -129,6 +217,9 @@ int main()
 	cout << endl << endl;
 	s.printCounts();
 	printf("\n");
+	// for(uint64_t i = 0 ; i < needed_guesses.size() ; i++) {
+	// 	cout << unsigned(needed_guesses[i]) << endl;
+	// }
 }
 
 #endif
