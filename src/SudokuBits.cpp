@@ -62,7 +62,7 @@ string oo = "1.2.3.4.5.6.7.8.9..................................................
 // Loaded 10000000 	puzzles in 10631.764658 msec, 1.063176 usec/puzzle
 
 // 100P 0 ..4.83..2.51..43......9671.12.8....6.4....5..83.6.79...6.3.9.4...7...2.5.9..5.8.3
-#define SHORTMAIN
+#define xSHORTMAIN
 #ifdef SHORTMAIN
 // uint8_t RCToNumber(RowCol& rc) {
 // 	return rc.row*9 + rc.col;
@@ -164,7 +164,7 @@ int main() {
 
 int main()
 {
-	Puzzles pf("../../sudoku-puzzles/Guesses.txt");
+	Puzzles pf("../../sudoku-puzzles/10MP.txt");
 	cout << pf.getNumberOfPuzzles() << " puzzles loaded" << endl << endl << endl;
 	if (pf.getNumberOfPuzzles() == 0)
 		return 1;
