@@ -405,29 +405,29 @@ bool Sudoku::setValue(SQUARE sq, BITMASK bm)
             return;
         // now look through all units for a value that has only one occurance
         uint8_t bitCount;
+        uint8_t goodSquare;
         for (uint8_t b = 0 ; b < 9 ; b++) 
         { // loop through all digits
             for (uint8_t ul = 0 ; ul < numUnitList ; ul++)
             { // loop through all unitlists
                 bitCount = 0;
+                goodSquare = 0;
                 for (uint8_t sq = 0 ; sq < numInUnits ; sq++)
                 {                                                   // loops through all RowCols in each unit
-                    if((allowableValues[unitlist[ul][sq]] & bitMask[b]) != 0) // add up number of times bit it set
+                    if((allowableValues[unitlist[ul][sq]] & bitMask[b]) != 0) {// add up number of times bit it set
                         bitCount++;
+                        goodSquare = sq;
+                    }
                     if (bitCount > 1)
                     {
                         break;
                     }
                 }
-                if (bitCount == 1)
-                { // if bit is only set once, search and find where it was
-                    for (uint8_t sq = 0 ; sq < numInUnits ; sq++)
-                    {
-                        if ((allowableValues[unitlist[ul][sq]] & bitMask[b]) != 0)
-                        {                                // find where the bit was set
-                            setValue(unitlist[ul][sq], bitMask[b]); // and set the value
-                            solvedSome = true;           // flag to repeat loop
-                        }
+                if (bitCount == 1) {
+                    if ((allowableValues[unitlist[ul][goodSquare]] & bitMask[b]) != 0)
+                    {                                // find where the bit was set
+                        setValue(unitlist[ul][goodSquare], bitMask[b]); // and set the value
+                        solvedSome = true;           // flag to repeat loop
                     }
                 }
             }
