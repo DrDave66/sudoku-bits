@@ -53,15 +53,6 @@ string s2 = "5873249619147658233621897548215936477568412394936725181482573962794
 string s3 = "631482795792135648845769231158296374467351829329847156516973482983624517274518963";
 string oo = "1.2.3.4.5.6.7.8.9................................................................";
 
-
-// Loaded 100 		puzzles in 0.784945 msec, 7.849450 usec/puzzle
-// Loaded 1000 		puzzles in 2.524844 msec, 2.524844 usec/puzzle
-// Loaded 10000 	puzzles in 16.981709 msec, 1.698171 usec/puzzle
-// Loaded 100000 	puzzles in 113.327293 msec, 1.133273 usec/puzzle
-// Loaded 1000000 	puzzles in 1011.960570 msec, 1.011961 usec/puzzle
-// Loaded 10000000 	puzzles in 10631.764658 msec, 1.063176 usec/puzzle
-
-// 100P 0 ..4.83..2.51..43......9671.12.8....6.4....5..83.6.79...6.3.9.4...7...2.5.9..5.8.3
 #define xSHORTMAIN
 #ifdef SHORTMAIN
 // uint8_t RCToNumber(RowCol& rc) {
@@ -162,9 +153,16 @@ int main() {
 // 61 - 0
 #else
 
-int main()
+int main(int argc, char* argv[])
 {
-	Puzzles pf("../../sudoku-puzzles/10MP.txt");
+
+	string filename;
+	if(argv[1] == NULL ) {
+		filename = "../../sudoku-puzzles/100000P.txt";
+	} else {
+		filename = argv[1];
+	}
+	Puzzles pf(filename);
 	cout << pf.getNumberOfPuzzles() << " puzzles loaded" << endl << endl << endl;
 	if (pf.getNumberOfPuzzles() == 0)
 		return 1;
