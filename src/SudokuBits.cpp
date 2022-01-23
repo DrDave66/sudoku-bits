@@ -213,8 +213,8 @@ int main(int argc, char* argv[])
     cout << "Solved " << solved << " out of " << pf.getNumberOfPuzzles() << " puzzles. " << guessed << " puzzles needed guesses" << endl;
 	cout << "Min time: " << minTime*1000.0 << " ms, Max time: " << maxTime*1000.0 << " ms, Average Time: " << (double)sumTime / (double)solved * 1000 << " ms, Total: " << total.elapsedString(SEC) << " sec" << endl;
 	cout << endl << endl;
-	s.printCounts();
-	printf("\n");
+	// s.printCounts();
+	// printf("\n");
 	// for(uint64_t i = 0 ; i < needed_guesses.size() ; i++) {
 	// 	cout << unsigned(needed_guesses[i]) << endl;
 	// }
