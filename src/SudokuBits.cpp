@@ -61,28 +61,36 @@ string oo = "1.2.3.4.5.6.7.8.9..................................................
 
 int main() {
  // out of the 9.8M puzzles with no guesses, make a histogram of the number of digits
-	Puzzles p("../../sudoku-puzzles/10MP.txt");
+	Puzzles p("/home/dave/code/sudoku-puzzles/10MP.txt");
 	Sudoku s;
-	string filename = "Guesses.txt";
 	fstream file;
-	file.open(filename,ios::out);
+	file.open("Guesses.txt",ios::out);
 	string ostring;
+	fstream file98;
+	file98.open("9.8M.txt",ios::out);
+	uint32_t numGuessed = 0;
 	if(file.is_open()) {
 		for (uint64_t i = 0 ; i < p.getNumberOfPuzzles() ; i++) {
 			s.setPuzzle(p.getPuzzle(i));
 			s.solvePuzzle();
 			if(s.isPuzzleSolved()) {
 				if(s.guessNumber != 0) {
+					numGuessed++;
 					ostring = p.getPuzzle(i);
 					//printf("%lu needed %d guesses\n", i, s.guessNumber);
 					file.write(ostring.c_str(), ostring.length());
+				} else {
+					ostring = p.getPuzzle(i);
+					ostring.append("\n");
+					file98.write(ostring.c_str(), ostring.length());
 				}
 			}
 			if(i % 10000 == 0)
-				printf("%d\n",i);
+				printf("%ld %d\n",i , numGuessed);
 		}
 	}
 	file.close();
+	file98.close();
 
 	// uint64_t histogram[81];
 	// for(uint8_t i = 0 ; i < 81 ; i++) {
@@ -158,7 +166,7 @@ int main(int argc, char* argv[])
 
 	string filename;
 	if(argv[1] == NULL ) {
-		filename = "../../sudoku-puzzles/100000P.txt";
+		filename = "../../sudoku-puzzles/9.8M.txt";
 	} else {
 		filename = argv[1];
 	}
