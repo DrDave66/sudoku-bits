@@ -16,7 +16,12 @@
 std::uniform_int_distribution<uint8_t> rand08(0,8);	
 std::uniform_int_distribution<uint16_t> rand01M(0,16959);	
 
-
+/**
+ * @brief given a square, returns a string representation
+ * 
+ * @param s square number
+ * @return string representation of square (e.g. A5, D7)
+ */
 string squareToText(SQUARE s) {
     uint8_t r,c;
     string retval;
@@ -342,15 +347,6 @@ void Sudoku::printAllowableValues(string title)
  */
 bool Sudoku::setValue(SQUARE sq, BITMASK bm)
 {
-    // uint8_t r = sq / 9;
-    // uint8_t c = sq % 9;
-    // uint8_t bitSet = singleBitSet(bm);
-    // char output;
-    // if(bitSet == 10)
-    //     output = '.';
-    // else
-    //     output = '1' + bitSet;
-    // cout << "SV " << (char)('A' + (sq/9)) << (char)('1' + (sq%9)) << " " << output << endl;
     setValueCount++;
     if (bm == bitMask[9])
     { // if value is empty
