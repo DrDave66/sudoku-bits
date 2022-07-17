@@ -353,8 +353,8 @@ bool Sudoku::setValue(SQUARE sq, BITMASK bm)
         puzzle[sq] = ALL_CLEAR; // don't mess with allowable values
         return true;
     }
-    else
-    { // if value is real
+    else // if value is real
+    { 
         // make sure the value is allowed to be set
         if ((allowableValues[sq] & bm) == 0)
         {
@@ -374,11 +374,11 @@ bool Sudoku::setValue(SQUARE sq, BITMASK bm)
     return true;
 }
 
-// /**
-//  * @brief solves for cells with a single available value, then for units
-//  * with only one occurance of a particular value
-//  *
-//  */
+/**
+ * @brief solves for cells with a single available value, then for units
+ * with only one occurance of a particular value
+ *
+ */
  void Sudoku::solveOnes(void)
  {
     solveOnesCount++;

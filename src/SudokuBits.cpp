@@ -77,7 +77,6 @@ int main() {
 				if(s.guessNumber != 0) {
 					numGuessed++;
 					ostring = p.getPuzzle(i);
-					//printf("%lu needed %d guesses\n", i, s.guessNumber);
 					file.write(ostring.c_str(), ostring.length());
 				} else {
 					ostring = p.getPuzzle(i);
@@ -200,9 +199,6 @@ int main(int argc, char* argv[])
 			if(s.guessNumber != 0) {
 				guessed++;
 				needed_guesses.push_back(i);
-				//puzzle 7734746 needed a guess
-				// printf("puzzle %d needed a %d guesses\n",i,s.guessNumber);
-				//cout << pf.getPuzzle(i) << endl;
 			}
 		}
 		else {
@@ -221,20 +217,6 @@ int main(int argc, char* argv[])
     cout << "Solved " << solved << " out of " << pf.getNumberOfPuzzles() << " puzzles. " << guessed << " puzzles needed guesses" << endl;
 	cout << "Min time: " << minTime*1000.0 << " ms, Max time: " << maxTime*1000.0 << " ms, Average Time: " << (double)sumTime / (double)solved * 1000 << " ms, Total: " << total.elapsedString(SEC) << " sec" << endl;
 	cout << endl << endl;
-	// s.printCounts();
-	// printf("\n");
-	// for(uint64_t i = 0 ; i < needed_guesses.size() ; i++) {
-	// 	cout << unsigned(needed_guesses[i]) << endl;
-	// }
 }
 
 #endif
-
-// 10MP-Failed.txt      	Min time: 0.107397 ms, Max time: 180.694 ms, Average Time: 0.963753 ms, Total: 364.072973 sec
-// 1MP old way				Min time: 0.021334 ms, Max time: 5.1635 ms, Average Time: 0.0305412 ms, Total: 66.192528 sec
-// 1MP bit round 1 			Min time: 0.006958 ms, Max time: 12.3362 ms, Average Time: 0.00862062 ms, Total: 13.802928 sec
-// 1MP better loops			Min time: 0.005765 ms, Max time: 6.95828 ms, Average Time: 0.00742397 ms, Total: 10.232687 sec
-
-// 10MP						Min time: 0.003219 ms, Max time: 68.2603 ms, Average Time: 0.0180983 ms, Total: 220.961769 sec
-// 10MP bit 1/5				Min time: 0.000882 ms, Max time: 49.7904 ms, Average Time: 0.00711188 ms, Total: 88.808665 sec
-//							Min time: 0.000498 ms, Max time: 28.1895 ms, Average Time: 0.00597333 ms, Total: 72.157265 sec
